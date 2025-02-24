@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://xmlns.tibco.com/2003/5/bw/plugins/tcp">
+    <pd:name>TCPClient.process</pd:name>
+    <pd:startName>Timer</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="Timer">
+        <pd:type>com.tibco.plugin.timer.TimerEventSource</pd:type>
+        <pd:resourceType>ae.activities.timer</pd:resourceType>
+        <pd:x>108</pd:x>
+        <pd:y>76</pd:y>
+        <config>
+            <StartTime>1736799967000</StartTime>
+            <Frequency>true</Frequency>
+            <TimeInterval>1</TimeInterval>
+            <FrequencyIndex>Second</FrequencyIndex>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>661</pd:endX>
+    <pd:endY>69</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1736798775523</pd:targetNamespace>
+    <pd:activity name="TCP Open Connection">
+        <pd:type>com.tibco.plugin.tcp.TCPOpenConnectionActivity</pd:type>
+        <pd:resourceType>ae.activities.TCPOpenConnection</pd:resourceType>
+        <pd:x>255</pd:x>
+        <pd:y>105</pd:y>
+        <config>
+            <sharedConnection>/TCP Connection.sharedtcp</sharedConnection>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Write TCP Data">
+        <pd:type>com.tibco.plugin.tcp.TCPWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.TCPWrite</pd:resourceType>
+        <pd:x>378</pd:x>
+        <pd:y>97</pd:y>
+        <config>
+            <dataType>Text</dataType>
+            <Separator>SEPARATOR_USER_STRING</Separator>
+            <SeparatorBinary>SEPARATOR_NONE</SeparatorBinary>
+            <Encoding/>
+            <userDefinedSeparator>+</userDefinedSeparator>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <ns:connection>
+                    <xsl:value-of select="$TCP-Open-Connection/ns:ActivityOutput/ns:connection"/>
+                </ns:connection>
+                <ns:data>
+                    <xsl:value-of select="'test data+'"/>
+                </ns:data>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="TCP Close Connection">
+        <pd:type>com.tibco.plugin.tcp.TCPCloseConnectionActivity</pd:type>
+        <pd:resourceType>ae.activities.TCPCloseConnection</pd:resourceType>
+        <pd:x>515</pd:x>
+        <pd:y>106</pd:y>
+        <config>
+            <OpenConnectionActivity> </OpenConnectionActivity>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <ns:connection>
+                    <xsl:value-of select="$TCP-Open-Connection/ns:ActivityOutput/ns:connection"/>
+                </ns:connection>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Timer</pd:from>
+        <pd:to>TCP Open Connection</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>TCP Open Connection</pd:from>
+        <pd:to>Write TCP Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Write TCP Data</pd:from>
+        <pd:to>TCP Close Connection</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>TCP Close Connection</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

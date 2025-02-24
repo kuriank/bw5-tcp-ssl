@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource>
+    <name>TCP Connection</name>
+    <resourceType>ae.shared.TCPSharedconnection</resourceType>
+    <config>
+        <enableDNSLookup>true</enableDNSLookup>
+        <maxConnections>10</maxConnections>
+        <WhenExhaustedAction>Block</WhenExhaustedAction>
+        <maxWaitTime>10000</maxWaitTime>
+        <idleTimeout>-1</idleTimeout>
+        <Host>localhost</Host>
+        <Port>8181</Port>
+        <useSsl>true</useSsl>
+        <ns0:ssl xmlns:ns0="http://www.tibco.com/xmlns/aemeta/services/2002">
+            <ns0:strongCipherSuitesOnly>true</ns0:strongCipherSuitesOnly>
+            <ns0:identity isRef="true">/Identity.id</ns0:identity>
+            <ns0:cert isRef="true">/Certs/.folder</ns0:cert>
+        </ns0:ssl>
+    </config>
+</BWSharedResource>

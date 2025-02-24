@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://xmlns.tibco.com/2003/5/bw/plugins/tcp" xmlns:ns2="http://www.tibco.com/pe/WriteToLogActivitySchema">
+    <pd:name>TCPServer.process</pd:name>
+    <pd:startName>TCP Receiver</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="TCP Receiver">
+        <pd:type>com.tibco.plugin.tcp.TCPEventSource</pd:type>
+        <pd:resourceType>ae.activities.TCPEventSource</pd:resourceType>
+        <pd:x>155</pd:x>
+        <pd:y>91</pd:y>
+        <config>
+            <sharedConnection>/TCP Connection.sharedtcp</sharedConnection>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>587</pd:endX>
+    <pd:endY>88</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1736798775523</pd:targetNamespace>
+    <pd:activity name="Read TCP Data">
+        <pd:type>com.tibco.plugin.tcp.TCPReadActivity</pd:type>
+        <pd:resourceType>ae.activities.TCPRead</pd:resourceType>
+        <pd:x>297</pd:x>
+        <pd:y>111</pd:y>
+        <config>
+            <dataType>Text</dataType>
+            <Separator>SEPARATOR_USER_STRING</Separator>
+            <SeparatorBinary>SEPARATOR_NONE</SeparatorBinary>
+            <Encoding/>
+            <userDefinedSeparator>+</userDefinedSeparator>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <ns:connection>
+                    <xsl:value-of select="$TCP-Receiver/ns:ActivityOutput/ns:connection"/>
+                </ns:connection>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Log">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>438</pd:x>
+        <pd:y>113</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat('Received data - ', $Read-TCP-Data/ns:ActivityOutput/ns:data)"/>
+                </message>
+            </ns2:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>TCP Receiver</pd:from>
+        <pd:to>Read TCP Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Read TCP Data</pd:from>
+        <pd:to>Log</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
